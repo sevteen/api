@@ -4,10 +4,11 @@ import helmet from "@fastify/helmet";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 
+import { logger } from "./utils";
 import { routes } from "./routes";
 
 const server = Fastify({
-  logger: true,
+  logger,
   disableRequestLogging: false,
   connectionTimeout: 60000,
 });

@@ -1,16 +1,18 @@
 import Fastify from "fastify";
+import hyperid from "hyperid";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 
-import { logger } from "./utils";
+import { logger } from "./lib";
 import { routes } from "./routes";
 
 const server = Fastify({
   logger,
   disableRequestLogging: false,
   connectionTimeout: 60000,
+  genReqId: () => hyperid().uuid,
 });
 
 // Register plugins with latest v5 options

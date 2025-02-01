@@ -1,7 +1,11 @@
+import type { PoolConfig } from "pg";
+
 import { Pool } from "pg";
+import { Promise } from "bluebird";
 import { Kysely, PostgresDialect } from "kysely";
 
 import { logger } from "./logger";
+import { environmentConfig } from "../config/environment";
 
 // Define your database interface
 interface Database {
@@ -16,20 +20,23 @@ interface Database {
 }
 
 // Create database configuration
-const config = {
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME || "your_database",
-  user: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "postgres",
-  max: Number(process.env.DB_POOL_SIZE) || 10,
+const config: PoolConfig = {
+  host: environmentConfig.DB_HOST,
+  port: environmentConfig.DB_PORT,
+  database: environmentConfig.DB_NAME,
+  user: environmentConfig.DB_USER,
+  password: environmentConfig.DB_PASSWORD,
+  min: environmentConfig.DB_MIN_CONNECTIONS,
+  max: environmentConfig.DB_MAX_CONNECTIONS,
   idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  application_name: environmentConfig.APPLICATION_NAME,
 };
 
 // Create a connection pool
 const pool = new Pool({
   ...config,
-  connectionTimeoutMillis: 5000,
+  Promise,
 });
 
 // Log pool events

@@ -26,26 +26,34 @@ declare module "fastify" {
 
 export default fp(
   async (fastify) => {
+    fastify.log.info("Reply plugin starting");
+
     // Modify global response if status code >= 200
     fastify.addHook("onSend", (request, reply, payload, done) => {
-      const timestamp = dayjs().format();
+      if (reply.statusCode >= 200) {
+        const timestamp = dayjs().format();
+        const existingPayload = JSON.parse(payload as string);
+        const existingMeta = existingPayload.meta || {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const existingMeta = (payload as any)?.meta || {};
+        const globalMeta = {
+          timestamp,
+          request_id: request.id,
+          response_time: `${reply.elapsedTime}ms`,
+          ...existingMeta,
+        };
 
-      const globalMeta = {
-        timestamp,
-        request_id: request.id,
-        response_time: `${reply.elapsedTime}ms`,
-        ...existingMeta,
-      };
+        const modifiedPayload = {
+          ...existingPayload,
+          status_code: existingPayload.statusCode,
+          meta: globalMeta,
+        };
 
-      const modifiedPayload = {
-        ...(typeof payload === "object" ? payload : { data: payload }),
-        meta: globalMeta,
-      };
+        delete modifiedPayload.statusCode;
 
-      done(null, modifiedPayload);
+        done(null, JSON.stringify(modifiedPayload));
+      } else {
+        done(null, payload);
+      }
     });
 
     // Success response

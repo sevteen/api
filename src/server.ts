@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import type { EnvSchemaData } from "env-schema";
 import type { FastifyUnderPressureOptions } from "@fastify/under-pressure";
 
 import Fastify from "fastify";
@@ -9,6 +8,7 @@ import helmet from "@fastify/helmet";
 import underPressure from "@fastify/under-pressure";
 
 import { logger } from "./lib";
+import { plugins } from "./plugins";
 import { setupAllShutdownHandlers } from "./shutdown";
 
 export const underPressureConfig = (): FastifyUnderPressureOptions => ({
@@ -21,14 +21,14 @@ export const underPressureConfig = (): FastifyUnderPressureOptions => ({
   healthCheckInterval: 5000,
 });
 
-export const init = async (config: EnvSchemaData): Promise<FastifyInstance> => {
+export const init = async (): Promise<FastifyInstance> => {
   const app = Fastify({
     loggerInstance: logger,
     genReqId: (req) =>
       (req.headers["x-request-id"] as string) || hyperid().uuid,
   });
 
-  app.decorate("config", config);
+  plugins.forEach((plugin) => app.register(plugin));
 
   app.register(cors, {
     origin: true, // Reflects the request origin
@@ -54,6 +54,10 @@ export const init = async (config: EnvSchemaData): Promise<FastifyInstance> => {
 
   await app.ready();
   logger.info("Everything is Loaded..!");
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   setupAllShutdownHandlers(app);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return app;
 };

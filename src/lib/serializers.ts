@@ -118,12 +118,9 @@ export const serializers = {
 
     // If there's an error, serialize it
     if (reply.statusCode >= 400) {
-      const error = reply.raw.statusMessage
-        ? new Error(reply.raw.statusMessage)
-        : undefined;
-      if (error) {
-        response.error = serializers.err(error);
-      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      response.error = serializers.err(reply.error);
     }
 
     return response;

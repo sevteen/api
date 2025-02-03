@@ -30,8 +30,21 @@ export default fp(
 
     // Modify global response if status code >= 200
 
+    fastify.addHook("onRoute", (routeOptions) => {
+      routeOptions.config = {
+        ...routeOptions.config,
+        globalSerialize:
+          (routeOptions.config as any)?.globalSerialize === false
+            ? false
+            : true,
+      };
+    });
+
     fastify.addHook("onSend", (request, reply, payload, done) => {
-      if (reply.statusCode >= 200) {
+      if (
+        reply.statusCode >= 200 &&
+        (request.routeOptions.config as any).globalSerialize
+      ) {
         const timestamp = dayjs().format();
         let existingPayload;
         try {

@@ -6,6 +6,7 @@ async function routes(fastify: FastifyInstance): Promise<void> {
   fastify.public({
     method: "GET",
     url: "/ping",
+    config: { globalSerialize: false },
     handler: async (_request, _reply) => {
       const ping = await dbUtils.healthCheck();
       if (ping) {

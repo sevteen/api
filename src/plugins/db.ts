@@ -15,5 +15,5 @@ export default fp(async (fastify) => {
 
   fastify.decorateRequest("rawQuery", dbUtils.rawQuery);
 
-  fastify.decorateRequest("db", db);
+  fastify.decorateRequest("db", { getter: () => db });
 });

@@ -29,10 +29,18 @@ export default fp(
     fastify.log.info("Reply plugin starting");
 
     // Modify global response if status code >= 200
+
     fastify.addHook("onSend", (request, reply, payload, done) => {
       if (reply.statusCode >= 200) {
         const timestamp = dayjs().format();
-        const existingPayload = JSON.parse(payload as string);
+        let existingPayload;
+        try {
+          existingPayload = payload ? JSON.parse(payload as string) : {};
+        } catch (e) {
+          done(null, payload);
+          return;
+        }
+
         const existingMeta = existingPayload.meta || {};
 
         const globalMeta = {

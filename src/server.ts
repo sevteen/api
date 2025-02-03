@@ -8,6 +8,7 @@ import helmet from "@fastify/helmet";
 import underPressure from "@fastify/under-pressure";
 
 import { logger } from "./lib";
+import modules from "./modules";
 import { plugins } from "./plugins";
 import { setupAllShutdownHandlers } from "./shutdown";
 
@@ -29,6 +30,8 @@ export const init = async (): Promise<FastifyInstance> => {
   });
 
   plugins.forEach((plugin) => app.register(plugin));
+
+  await app.register(modules);
 
   app.register(cors, {
     origin: true, // Reflects the request origin

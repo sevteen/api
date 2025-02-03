@@ -7,7 +7,6 @@ import perfectionistPlugin from "eslint-plugin-perfectionist";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 
-// Common rules for NestJS
 const commonRules = {
   "func-names": "warn",
   "no-bitwise": "error",

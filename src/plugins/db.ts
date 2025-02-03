@@ -3,17 +3,17 @@ import fp from "fastify-plugin";
 import { db, dbUtils } from "../lib";
 
 declare module "fastify" {
-  interface FastifyInstance {
+  interface FastifyRequest {
     transaction: typeof dbUtils.transaction;
-    query: typeof dbUtils.rawQuery;
+    rawQuery: typeof dbUtils.rawQuery;
     db: typeof db;
   }
 }
 
 export default fp(async (fastify) => {
-  fastify.decorate("transaction", dbUtils.transaction);
+  fastify.decorateRequest("transaction", dbUtils.transaction);
 
-  fastify.decorate("query", dbUtils.rawQuery);
+  fastify.decorateRequest("rawQuery", dbUtils.rawQuery);
 
-  fastify.decorate("db", db);
+  fastify.decorateRequest("db", db);
 });

@@ -7,6 +7,11 @@ declare module "fastify" {
     isPublic?: boolean;
     isPrivate?: boolean;
   }
+
+  interface FastifyInstance {
+    public(routeOptions: RouteOptions): void;
+    private(routeOptions: RouteOptions): void;
+  }
 }
 
 export default fp(
@@ -17,6 +22,7 @@ export default fp(
       "public",
       function publicRoute(routeOptions: RouteOptions) {
         routeOptions.schema = { ...routeOptions.schema, isPublic: true };
+        fastify.route(routeOptions);
       },
     );
 
@@ -24,6 +30,7 @@ export default fp(
       "private",
       function privateRoute(routeOptions: RouteOptions) {
         routeOptions.schema = { ...routeOptions.schema, isPrivate: true };
+        fastify.route(routeOptions);
       },
     );
 
